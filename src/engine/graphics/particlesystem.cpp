@@ -56,7 +56,8 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Camera> cam)
                 float r2 = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/.3f));
                 float r3 = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/.3f));
                 p.speed = glm::vec3(r1 - .15f, r2 - .15f, r3 - .15f);
-                float blend = ((p.pos.y - m_seaTopLeft.y)/m_seaSize.y);
+                float blend = (p.pos.y/3.f);
+                //float blend = ((p.pos.y - m_seaTopLeft.y)/m_seaSize.y);
                 (p.col)[0] = (m_particle_mat.x*(1.f-blend) + m_particle_mat_top.x*blend)*255.f;
                 (p.col)[1]= (m_particle_mat.y*(1.f-blend) + m_particle_mat_top.y*blend)*255.f;
                 (p.col)[2] = (m_particle_mat.z*(1.f-blend) + m_particle_mat_top.z*blend)*255.f;
@@ -82,27 +83,44 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::collisionTest(int particleId) {
     Particle p = m_particlesContainer[particleId];
-    if(p.pos.y <= particleRadius) {
-        p.pos = glm::vec3(p.pos.x, 0.001f + particleRadius, p.pos.z);
-        p.speed = glm::vec3(p.speed.x, -p.speed.y*.9f, p.speed.z);
+    if(p.pos.y <= .1f + particleRadius) {
+        p.pos = glm::vec3(p.pos.x, 0.101f + particleRadius, p.pos.z);
+        p.speed = glm::vec3(p.speed.x, std::abs(p.speed.y*.9f), p.speed.z);
+        m_particlesContainer[particleId] = p;
+        return;
     }
     if(p.pos.x <= -3.f + particleRadius) {
         p.pos = glm::vec3(-2.999f + particleRadius, p.pos.y, p.pos.z);
-        p.speed = glm::vec3(-p.speed.x, p.speed.y, p.speed.z);
+        p.speed = glm::vec3(std::abs(p.speed.x), p.speed.y, p.speed.z);
     }
     if(p.pos.x >= 3.f - particleRadius) {
         p.pos = glm::vec3(2.999f - particleRadius, p.pos.y, p.pos.z);
-        p.speed = glm::vec3(-p.speed.x, p.speed.y, p.speed.z);
+        p.speed = glm::vec3(-std::abs(p.speed.x), p.speed.y, p.speed.z);
     }
     if(p.pos.z <= -3.f) {
         p.pos = glm::vec3(p.pos.x, p.pos.y, -2.999f);
-        p.speed = glm::vec3(p.speed.x, p.speed.y, -p.speed.z);
+        p.speed = glm::vec3(p.speed.x, p.speed.y, std::abs(p.speed.z));
     }
     if(p.pos.z >= 3.f) {
         p.pos = glm::vec3(p.pos.x, p.pos.y, 2.999f);
-        p.speed = glm::vec3(p.speed.x, p.speed.y, -p.speed.z);
+        p.speed = glm::vec3(p.speed.x, p.speed.y, -std::abs(p.speed.z));
     }
     m_particlesContainer[particleId] = p;
+}
+
+void ParticleSystem::applyGravity(glm::vec3 gravitySphere) {
+    for(int idx = 0; idx < m_maxParticles; idx++) {
+        Particle p = m_particlesContainer[idx];
+        glm::vec3 dist = gravitySphere - p.pos;
+        float magnitude = glm::distance2(gravitySphere, p.pos) + 0.001f;
+        float multFactor = 1.f/magnitude;
+        if(multFactor > 3.f) {
+            multFactor = 3.f;
+        }
+        glm::vec3 unitVec = glm::normalize(dist);
+        p.forceAccum = (unitVec*gravityForce* multFactor);//;/magnitude;
+        m_particlesContainer[idx] = p;
+    }
 }
 
 void ParticleSystem::tick(float time) {
@@ -110,16 +128,17 @@ void ParticleSystem::tick(float time) {
    for(int idx = 0; idx < m_maxParticles; idx++) {
               //  int idx = row*m_seaColNum*m_seaHeightNum + col*m_seaHeightNum + y;
                 Particle p = m_particlesContainer[idx];
-                p.speed += (p.forceAccum/p.mass + m_gravity) * time;
+                p.speed += (p.forceAccum/p.mass+ m_gravity) * time;
                 p.pos += p.speed * time;
                 m_particlesContainer[idx] = p;
                 collisionTest(idx);
                 p = m_particlesContainer[idx];
-                float blend = ((p.pos.y - m_seaTopLeft.y)/m_seaSize.y);
+                float blend = (p.pos.y/3.f);
                 (p.col)[0] = (m_particle_mat.x*(1.f-blend) + m_particle_mat_top.x*blend)*255.f;
                 (p.col)[1]= (m_particle_mat.y*(1.f-blend) + m_particle_mat_top.y*blend)*255.f;
                 (p.col)[2] = (m_particle_mat.z*(1.f-blend) + m_particle_mat_top.z*blend)*255.f;
                 p.distance = glm::length2(p.pos - camPos);
+                p.forceAccum = glm::vec3(0.f, 0.f, 0.f);
                 m_particlesContainer[idx] = p;
 
     }

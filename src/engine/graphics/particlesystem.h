@@ -27,7 +27,9 @@ public:
     ~ParticleSystem();
     void draw(Graphics *g);
     void tick(float time);
+    void applyGravity(glm::vec3 gravitySphere);
 private:
+    float gravityForce = 2.5f;
     std::shared_ptr<Camera> m_camera;
     glm::vec3 m_gravity = glm::vec3(0.f, -1.f, 0.f);
     // particles

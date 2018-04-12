@@ -42,6 +42,7 @@ private:
     Mesh m_mesh;
     std::shared_ptr<Shape> m_shape;
     std::shared_ptr<Shape> m_ground;
+    glm::vec3 gravitySphere;
    // std::shared_ptr<Kinect> m_kinect;
     std::shared_ptr<ParticleSystem> m_particles;
     QWidget *m_window;

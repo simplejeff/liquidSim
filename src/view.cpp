@@ -64,7 +64,7 @@ View::~View()
 void View::initializeGL()
 {
     /** SUPPORT CODE START **/
-
+    gravitySphere = glm::vec3(0.f, 2.f, 0.f);
     // Initialize graphics object
     m_graphics = Graphics::getGlobalInstance();
 
@@ -120,6 +120,11 @@ void View::initializeGL()
     keys["right"] = false;
     keys["forward"]= false;
     keys["backward"] = false;
+    keys["gleft"] = false;
+    keys["gright"] = false;
+    keys["gforward"]= false;
+    keys["gbackward"] = false;
+
     QString infile = "C:/Users/Jeff/Documents/graphics/mesh_visualiser/meshes/teapot.obj";
     m_mesh.loadFromFile(infile.toStdString());
     m_shape = m_mesh.makeMesh();
@@ -287,6 +292,10 @@ void View::draw() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //m_shape->draw(m_graphics);
     m_ground->draw(m_graphics);
+    m_graphics->translate(gravitySphere);
+    m_graphics->scale(glm::vec3(.5f, .5f, .5f));
+    m_graphics->drawShape("sphere");
+    m_graphics->clearTransform();
     //m_kinect->drawKinectData();
     m_particles->draw(m_graphics);
     #if GRAPHICS_DEBUG_LEVEL > 0
@@ -444,6 +453,18 @@ void View::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_X) {
         keys["down"] = true;
     }
+    if(event->key() == Qt::Key_I) {
+        keys["gforward"] = true;
+    }
+    if(event->key() == Qt::Key_K) {
+        keys["gbackward"] = true;
+    }
+    if(event->key() == Qt::Key_J) {
+        keys["gleft"] = true;
+    }
+    if(event->key() == Qt::Key_L) {
+        keys["gright"] = true;
+    }
     // TODO (Warmup 1): Handle keyboard presses here
 }
 
@@ -481,6 +502,18 @@ void View::keyReleaseEvent(QKeyEvent *event)
     }
     if(event->key() == Qt::Key_X) {
         keys["down"] = false;
+    }
+    if(event->key() == Qt::Key_I) {
+        keys["gforward"] = false;
+    }
+    if(event->key() == Qt::Key_K) {
+        keys["gbackward"] = false;
+    }
+    if(event->key() == Qt::Key_J) {
+        keys["gleft"] = false;
+    }
+    if(event->key() == Qt::Key_L) {
+        keys["gright"] = false;
     }
 }
 
@@ -582,6 +615,21 @@ void View::tick()
     if(keys["down"]) {
         m_camera->translate(-up*seconds);
     }
+    glm::vec3 gForward = glm::vec3(0, 0, -1.f);
+    glm::vec3 gLeft = glm::vec3(-1.f, 0, 0);
+    if(keys["gforward"]) {
+        gravitySphere += gForward*seconds;
+    }
+    if(keys["gbackward"]) {
+        gravitySphere -= gForward*seconds;
+    }
+    if(keys["gleft"]) {
+        gravitySphere += gLeft*seconds;
+    }
+    if(keys["gright"]) {
+        gravitySphere -= gLeft*seconds;
+    }
+    m_particles->applyGravity(gravitySphere);
     m_particles->tick(seconds);
 
     /** SUPPORT CODE START **/
