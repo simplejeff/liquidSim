@@ -1,0 +1,68 @@
+struct Vertex;
+struct Face;
+
+int currVertex = 1;
+int currFace = 1;
+
+std::unordered_map<int, Vertex> vertexMap;
+std::unordered_map<int, Face> faceMap;
+
+struct Vertex {
+	Vector3f coords;
+	std::vector<int> faces;
+	std::vector<int> changedFace;
+};
+
+struct Face {
+	Vector3i vertex;
+	Vector3i changedVertex = Vector3i(0, 0, 0);
+};
+
+
+generate map
+for(Vector3f vertex : _vertices) {
+	Vertex v = Vertex(vertex);
+	map.insert(currVertex, v);
+	currVertex++;
+}
+for(Vector3i face : _faces) {
+	Face f = Face(face);
+	vertexMap[face[0]].faces.push_back(currFace);
+	vertexMap[face[1]].faces.push_back(currFace);
+	vertexMap[face[2]].faces.push_back(currFace);
+	currFace++;
+}
+int numOldFace = currFace;
+for(int i = 0; i < numOldFace; i++) {
+	Face currFace = faceMap[i];
+}
+
+function getAdjacentFace(int vert1, int vert2, int face1);
+
+function getMidPoint(int face1, int face2, int vert1, int vert2);
+
+function getSideIndex(int vert1, int vert2, int face1);
+
+for Face : faceMap:
+	//for each 3 vertices, get two vertices for a side
+	for(int side = 0; side < 3; side++) {
+		//for each side, getAdjacentFace and getSideIndex.
+			Check whether the vertex index is in currFace or adjacentFace sideIndex, have 2 booleans.
+			//if it is, add to a face if it isn't there.
+			//if not, for each adjacent face, getMidPoint
+				add newpoint with getSideIndex to both faces
+	}
+	use ordering system to generate new faces:
+	 add to all 3 vectors 'newface'
+	newFace (0, n2, n1)
+	newFace (1, n0, n2)
+	newFace (n0, 2, n1)
+	newFace (n1, n2, n0)
+
+for oldFace : faceMap:
+	//for each vertice
+		//
+
+
+
+
