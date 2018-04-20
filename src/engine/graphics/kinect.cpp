@@ -1,4 +1,4 @@
-#include "Kinect.h"
+#include "kinect.h"
 
 Kinect::Kinect()
 {}

@@ -32,29 +32,63 @@ SOURCES += \
     src/mainwindow.cpp \
     src/view.cpp \
     src/viewformat.cpp \
-    src/engine/graphics/ResourceLoader.cpp \
     src/engine/graphics/FBO.cpp \
     src/engine/graphics/IBO.cpp \
-    src/engine/graphics/Texture.cpp \
-    src/engine/graphics/Texture1D.cpp \
-    src/engine/graphics/Texture2D.cpp \
-    src/engine/graphics/Texture3D.cpp \
     src/engine/graphics/VAO.cpp \
     src/engine/graphics/VBO.cpp \
-    src/engine/graphics/VBOAttribMarker.cpp \
-    src/engine/graphics/Font.cpp \
-    src/engine/graphics/DepthBuffer.cpp \
-    src/engine/graphics/RenderBuffer.cpp \
-    src/engine/graphics/GraphicsDebug.cpp \
-    src/engine/graphics/Shader.cpp \
-    src/engine/graphics/Camera.cpp \
-    src/engine/graphics/Shape.cpp \
-    src/engine/graphics/Graphics.cpp \
-    src/engine/graphics/Material.cpp \
-    src/engine/graphics/Light.cpp \
     src/mesh.cpp \
-    src/engine/graphics/ParticleSystem.cpp \
-    src/engine/graphics/Kinect.cpp
+    src/engine/graphics/camera.cpp \
+    src/engine/graphics/depth_buffer.cpp \
+    src/engine/graphics/font.cpp \
+    src/engine/graphics/graphics.cpp \
+    src/engine/graphics/graphics_debug.cpp \
+    src/engine/graphics/kinect.cpp \
+    src/engine/graphics/light.cpp \
+    src/engine/graphics/material.cpp \
+    src/engine/graphics/particle_system.cpp \
+    src/engine/graphics/render_buffer.cpp \
+    src/engine/graphics/resource_loader.cpp \
+    src/engine/graphics/shader.cpp \
+    src/engine/graphics/shape.cpp \
+    src/engine/graphics/texture.cpp \
+    src/engine/graphics/texture_1D.cpp \
+    src/engine/graphics/texture_2D.cpp \
+    src/engine/graphics/texture_3D.cpp \
+    src/engine/graphics/VBO_attrib_marker.cpp \
+    src/engine/entities/entity.cpp \
+    src/engine/entities/colliders/collider_entity.cpp \
+    src/engine/entities/colliders/cube_collider.cpp \
+    src/engine/entities/colliders/plane_collider.cpp \
+    src/engine/entities/colliders/sphere_collider.cpp \
+    src/engine/entities/geometry/cube_entity.cpp \
+    src/engine/entities/geometry/geom_entity.cpp \
+    src/engine/entities/geometry/plane_entity.cpp \
+    src/engine/entities/geometry/sphere.cpp \
+    src/engine/entities/misc/transform_entity.cpp \
+    src/engine/entities/physics/constraints/constraint.cpp \
+    src/engine/entities/physics/constraints/density_constraint.cpp \
+    src/engine/entities/physics/dynamics/dynamic_physics_entity.cpp \
+    src/engine/entities/physics/dynamics/particle_system_entity.cpp \
+    src/engine/entities/physics/forces/force.cpp \
+    src/engine/entities/physics/forces/gravity_force.cpp \
+    src/engine/entities/physics/kernels/kernel.cpp \
+    src/engine/entities/physics/statics/static_physics_entity.cpp \
+    src/engine/entities/physics/physics_entity.cpp \
+    src/engine/entities/physics/kernels/poly6_kernel.cpp \
+    src/engine/entities/renderables/cube_renderable.cpp \
+    src/engine/entities/renderables/particle_system_renderable.cpp \
+    src/engine/entities/renderables/plane_renderable.cpp \
+    src/engine/entities/renderables/renderable_entity.cpp \
+    src/engine/entities/renderables/sphere_renderable.cpp \
+    src/engine/entities/world/particle_system_world_entity.cpp \
+    src/engine/entities/world/world_entity.cpp \
+    src/engine/system/collision/collision.cpp \
+    src/engine/system/simulation/physics_system.cpp \
+    src/engine/system/simulation/simulation.cpp \
+    src/engine/system/simulation/solver.cpp \
+    src/engine/scene/scene.cpp \
+    src/engine/renderer/renderer.cpp \
+    src/engine/entities/generators/particle_system_generator.cpp
 
 HEADERS += \
     libs/gl/textures/TextureParameters.h \
@@ -66,32 +100,10 @@ HEADERS += \
     src/mainwindow.h \
     src/view.h \
     src/viewformat.h \
-    src/engine/util/CommonIncludes.h \
-    src/engine/graphics/ResourceLoader.h \
-    src/engine/graphics/CylinderData.h \
-    src/engine/graphics/SphereData.h \
     src/engine/graphics/FBO.h \
     src/engine/graphics/IBO.h \
-    src/engine/graphics/Texture.h \
-    src/engine/graphics/Texture1D.h \
-    src/engine/graphics/Texture2D.h \
-    src/engine/graphics/Texture3D.h \
     src/engine/graphics/VAO.h \
     src/engine/graphics/VBO.h \
-    src/engine/graphics/VBOAttribMarker.h \
-    src/engine/graphics/CubeData.h \
-    src/engine/graphics/Font.h \
-    src/engine/graphics/DepthBuffer.h \
-    src/engine/graphics/RenderBuffer.h \
-    src/engine/graphics/GraphicsDebug.h \
-    src/engine/graphics/Shader.h \
-    src/engine/graphics/ShaderAttribLocations.h \
-    src/engine/graphics/Camera.h \
-    src/engine/graphics/Graphics.h \
-    src/engine/graphics/Shape.h \
-    src/engine/graphics/Material.h \
-    src/engine/graphics/Light.h \
-    src/engine/graphics/Constants.h \
     src/mesh.h \
     util/tiny_obj_loader.h \
     Eigen/Cholesky \
@@ -394,8 +406,65 @@ HEADERS += \
     Eigen/src/SVD/SVDBase.h \
     Eigen/src/SVD/UpperBidiagonalization.h \
     Eigen/src/UmfPackSupport/UmfPackSupport.h \
-    src/engine/graphics/ParticleSystem.h \
-    src/engine/graphics/Kinect.h
+    src/engine/util/common_includes.h \
+    src/engine/graphics/camera.h \
+    src/engine/graphics/constants.h \
+    src/engine/graphics/cube_data.h \
+    src/engine/graphics/cylinder_data.h \
+    src/engine/graphics/depth_buffer.h \
+    src/engine/graphics/font.h \
+    src/engine/graphics/graphics.h \
+    src/engine/graphics/graphics_debug.h \
+    src/engine/graphics/kinect.h \
+    src/engine/graphics/light.h \
+    src/engine/graphics/material.h \
+    src/engine/graphics/particle_system.h \
+    src/engine/graphics/render_buffer.h \
+    src/engine/graphics/resource_loader.h \
+    src/engine/graphics/shader.h \
+    src/engine/graphics/shader_attrib_locations.h \
+    src/engine/graphics/shape.h \
+    src/engine/graphics/sphere_data.h \
+    src/engine/graphics/texture.h \
+    src/engine/graphics/texture_1D.h \
+    src/engine/graphics/texture_2D.h \
+    src/engine/graphics/texture_3D.h \
+    src/engine/graphics/VBO_attrib_marker.h \
+    src/engine/entities/entity.h \
+    src/engine/entities/colliders/collider_entity.h \
+    src/engine/entities/colliders/cube_collider.h \
+    src/engine/entities/colliders/plane_collider.h \
+    src/engine/entities/colliders/sphere_collider.h \
+    src/engine/entities/generators/particle_system_generator.h \
+    src/engine/entities/geometry/cube_entity.h \
+    src/engine/entities/geometry/geom_entity.h \
+    src/engine/entities/geometry/plane_entity.h \
+    src/engine/entities/geometry/sphere.h \
+    src/engine/entities/misc/transform_entity.h \
+    src/engine/entities/physics/constraints/constraint.h \
+    src/engine/entities/physics/constraints/density_constraint.h \
+    src/engine/entities/physics/dynamics/dynamic_physics_entity.h \
+    src/engine/entities/physics/dynamics/particle_system_entity.h \
+    src/engine/entities/physics/forces/force.h \
+    src/engine/entities/physics/forces/gravity_force.h \
+    src/engine/entities/physics/kernels/kernel.h \
+    src/engine/entities/physics/kernels/poly6_kernel.h \
+    src/engine/entities/physics/statics/static_physics_entity.h \
+    src/engine/entities/physics/physics_entity.h \
+    src/engine/entities/renderables/cube_renderable.h \
+    src/engine/entities/renderables/particle_system_renderable.h \
+    src/engine/entities/renderables/plane_renderable.h \
+    src/engine/entities/renderables/renderable_entity.h \
+    src/engine/entities/renderables/sphere_renderable.h \
+    src/engine/entities/world/particle_system_world_entity.h \
+    src/engine/entities/world/world_entity.h \
+    src/engine/system/collision/collision.h \
+    src/engine/system/simulation/physics_system.h \
+    src/engine/system/simulation/simulation.h \
+    src/engine/system/simulation/solver.h \
+    src/engine/util/fileloader.h \
+    src/engine/scene/scene.h \
+    src/engine/renderer/renderer.h
 
 DEFINES += _USE_MATH_DEFINES
 DEFINES += TIXML_USE_STL

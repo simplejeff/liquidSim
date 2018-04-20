@@ -1,13 +1,15 @@
 #include "view.h"
 
 #include "viewformat.h"
-#include "engine/graphics/GraphicsDebug.h"
-#include "engine/graphics/Graphics.h"
-#include "engine/graphics/Camera.h"
-#include "engine/graphics/Material.h"
+#include "engine/graphics/graphics_debug.h"
+#include "engine/graphics/graphics.h"
+#include "engine/graphics/camera.h"
+#include "engine/graphics/material.h"
 #include "src/engine/graphics/FBO.h"
-#include "src/engine/graphics/Texture2D.h"
+#include "src/engine/graphics/texture_2D.h"
 #include "gl/textures/TextureParametersBuilder.h"
+
+
 #include <QApplication>
 #include <QKeyEvent>
 #include <iostream>
@@ -53,6 +55,16 @@ View::View(QWidget *parent) : QGLWidget(ViewFormat(), parent),
 
 View::~View()
 {
+    delete(world_entity);
+    /*(delete(plane);
+    delete(plane_renderable);*/
+    delete(cube);
+    delete(cube_collider);
+    delete(static_cube);
+    delete(cube_renderable);
+    delete(plane_world);
+    delete(sim);
+    delete(renderer);
     if(m_hmd) {
 
         /* Shutdown the VR system */
@@ -124,13 +136,53 @@ void View::initializeGL()
     keys["gright"] = false;
     keys["gforward"]= false;
     keys["gbackward"] = false;
+    keys["wireframe"] = false;
+    keys["simulation"] = false;
 
     QString infile = "C:/Users/Jeff/Documents/graphics/mesh_visualiser/meshes/teapot.obj";
-    m_mesh.loadFromFile(infile.toStdString());
-    m_shape = m_mesh.makeMesh();
-    m_ground = m_mesh.makeGround();
-    m_particles = std::make_shared<ParticleSystem>(m_camera);
+    //m_mesh.loadFromFile(infile.toStdString());
     //m_kinect = std::make_shared<Kinect>();
+
+    //Add particle system
+        world_entity = generator.GenerateCubeOfSpheres(Vector3f(-.5,-.5,.5),Vector3f(.5,-.5,.5),Vector3f(-.5,-.5,-.5),8,Vector3f(0,1,0),.5,.2,true);
+
+    //add plane
+    //Add base plane
+        default_transform;
+        default_transform.SetTranslate(Vector3f(0, 0, 0));
+        float scale = 3;
+       // plane = new PlaneEntity(&default_transform,Vector3f(-.5,-.5,.5)*scale,Vector3f(.5,-.5,.5)*scale,Vector3f(.5,-.5,-.5)*scale,Vector3f(-.5,-.5,-.5)*scale);
+
+        /*PlaneCollider plane_collider(&plane);
+        StaticPhysicsEntity static_plane(&plane_collider);
+        static_plane.SetCoefficientRestitution(.9);
+        static_plane.SetCoefficientFriction(.2);*/
+       // plane_renderable = new PlaneRenderable(plane);
+       // plane_renderable->SetColor(Vector3f(0,0,1));
+
+        cube = new CubeEntity(&default_transform, 3.0f, Vector3f(-.5,-.5,.5)*scale,Vector3f(.5,-.5,.5)*scale,Vector3f(-.5,-.5,-.5)*scale);
+
+        cube_collider = new CubeCollider(cube);
+        static_cube = new StaticPhysicsEntity(cube_collider);
+           static_cube->SetCoefficientRestitution(.9);
+           static_cube->SetCoefficientFriction(.2);
+
+        cube_renderable = new CubeRenderable(cube);
+           cube_renderable->SetColor(Vector3f(1,0,1));
+
+
+        plane_world = new WorldEntity(static_cube,cube_renderable);
+
+           //Add objects to the scene
+           scene.AddEntity(world_entity);
+           scene.AddEntity(plane_world);
+
+           //Create simulation
+           system.AddForce(&gravity);
+           sim = new Simulation(EULER,&system);
+           sim->AddSceneEntities(scene);
+
+           renderer = new Renderer(&scene);
 }
 
 void View::initVR() {
@@ -288,16 +340,14 @@ void View::draw() {
     /** SUPPORT CODE END **/
     // TODO (Lab 1): Call your game rendering code here
     m_graphics->clearTransform();
-    m_graphics->setMaterial("green");
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //m_shape->draw(m_graphics);
-    m_ground->draw(m_graphics);
-    m_graphics->translate(gravitySphere);
-    m_graphics->scale(glm::vec3(.5f, .5f, .5f));
-    m_graphics->drawShape("sphere");
+    //m_graphics->setMaterial("green");
+
+    //    m_graphics->clearTransform();
+    //    m_graphics->translate(gravitySphere);
+    //    m_graphics->scale(glm::vec3(.1f, .1f, .1f));
+    //    m_graphics->drawShape("sphere");
     m_graphics->clearTransform();
-    //m_kinect->drawKinectData();
-    m_particles->draw(m_graphics);
+    renderer->Render(m_graphics);
     #if GRAPHICS_DEBUG_LEVEL > 0
         m_graphics->printDebug();
         m_graphics->printShaderDebug();
@@ -465,6 +515,9 @@ void View::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_L) {
         keys["gright"] = true;
     }
+    if(event->key() == Qt::Key_P) {
+        keys["simulation"] = true;
+    }
     // TODO (Warmup 1): Handle keyboard presses here
 }
 
@@ -514,6 +567,12 @@ void View::keyReleaseEvent(QKeyEvent *event)
     }
     if(event->key() == Qt::Key_L) {
         keys["gright"] = false;
+    }
+    if(event->key() == Qt::Key_M) {
+        keys["wireframe"] = !keys["wireframe"];
+    }
+    if(event->key() == Qt::Key_P) {
+        keys["simulation"] = false;
     }
 }
 
@@ -615,9 +674,9 @@ void View::tick()
     if(keys["down"]) {
         m_camera->translate(-up*seconds);
     }
-    glm::vec3 gForward = glm::vec3(0, 0, -1.f);
+  /*  glm::vec3 gForward = glm::vec3(0, 0, -1.f);
     glm::vec3 gLeft = glm::vec3(-1.f, 0, 0);
-    if(keys["gforward"]) {
+   if(keys["gforward"]) {
         gravitySphere += gForward*seconds;
     }
     if(keys["gbackward"]) {
@@ -628,10 +687,15 @@ void View::tick()
     }
     if(keys["gright"]) {
         gravitySphere -= gLeft*seconds;
+    }*/
+    if(keys["wireframe"]) {
+        m_graphics->setWireframe(true);
+    } else {
+        m_graphics->setWireframe(false);
     }
-    m_particles->applyGravity(gravitySphere);
-    m_particles->tick(seconds);
-
+    if(keys["simulation"]) {
+        sim->Update(seconds);
+    }
     /** SUPPORT CODE START **/
     /* VR updates */
     updatePoses();

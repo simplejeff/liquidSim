@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
-#include "src/engine/graphics/Shape.h"
+#include "src/engine/graphics/shape.h"
 
 #include <Eigen/StdVector>
 

@@ -1,8 +1,8 @@
 #include "TextureParameters.h"
 
-#include "src/engine/graphics/GraphicsDebug.h"
-#include "src/engine/graphics/Texture.h"
-#include "src/engine/graphics/Texture2D.h"
+#include "src/engine/graphics/graphics_debug.h"
+#include "src/engine/graphics/texture.h"
+#include "src/engine/graphics/texture_2D.h"
 
 TextureParameters::TextureParameters(FILTER_METHOD filterMethod, WRAP_METHOD wrapMethod) :
     m_filterMethod(filterMethod),

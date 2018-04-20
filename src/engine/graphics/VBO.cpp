@@ -1,6 +1,6 @@
 #include "VBO.h"
 
-#include "VBOAttribMarker.h"
+#include "VBO_attrib_marker.h"
 
 #include <iostream>
 

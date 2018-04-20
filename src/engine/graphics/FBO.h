@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "Texture.h"
+#include "texture.h"
 #include "libs/gl/textures/TextureParameters.h"
 
 class RenderBuffer;

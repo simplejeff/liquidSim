@@ -2,10 +2,10 @@
 
 #include "GL/glew.h"
 
-#include "GraphicsDebug.h"
-#include "RenderBuffer.h"
-#include "DepthBuffer.h"
-#include "Texture2D.h"
+#include "graphics_debug.h"
+#include "render_buffer.h"
+#include "depth_buffer.h"
+#include "texture_2D.h"
 #include "libs/gl/textures/TextureParametersBuilder.h"
 
 

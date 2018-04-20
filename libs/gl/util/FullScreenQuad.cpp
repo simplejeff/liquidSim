@@ -3,9 +3,9 @@
 #include <vector>
 
 #include "src/engine/graphics/VBO.h"
-#include "src/engine/graphics/VBOAttribMarker.h"
+#include "src/engine/graphics/VBO_attrib_marker.h"
 #include "src/engine/graphics/VAO.h"
-#include "src/engine/graphics/ShaderAttribLocations.h"
+#include "src/engine/graphics/shader_attrib_locations.h"
 
 FullScreenQuad::FullScreenQuad()
 {

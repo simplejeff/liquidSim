@@ -1,9 +1,9 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include "engine/util/CommonIncludes.h"
+#include "engine/util/common_includes.h"
 #include "mesh.h"
-#include "engine/graphics/Shape.h"
+#include "engine/graphics/shape.h"
 #include "GL/glew.h"
 #include <qgl.h>
 #include <QGLWidget>
@@ -12,10 +12,25 @@
 #include <memory>
 #include <openvr.h>
 #include "glm/glm.hpp"
+#include "engine/entities/physics/statics/static_physics_entity.h"
+#include "engine/entities/geometry/sphere.h"
+#include "engine/entities/renderables/sphere_renderable.h"
+#include "engine/entities/colliders/sphere_collider.h"
+#include "engine/entities/physics/dynamics/particle_system_entity.h"
+#include "engine/entities/world/particle_system_world_entity.h"
+#include "engine/entities/geometry/plane_entity.h"
+#include "engine/entities/generators/particle_system_generator.h"
+#include "engine/entities/geometry/cube_entity.h"
+#include "engine/entities/renderables/cube_renderable.h"
+#include "engine/entities/colliders/cube_collider.h"
+#include "engine/entities/physics/forces/gravity_force.h"
+#include "engine/entities/renderables/plane_renderable.h"
+#include "engine/system/simulation/simulation.h"
+#include "engine/renderer/renderer.h"
 
 #include "src/engine/graphics/FBO.h"
-#include "src/engine/graphics/ParticleSystem.h"
-#include "src/engine/graphics/Kinect.h"
+#include "src/engine/graphics/particle_system.h"
+#include "src/engine/graphics/kinect.h"
 class Graphics;
 class Camera;
 
@@ -35,16 +50,28 @@ public:
 
 private:
     static const int FRAMES_TO_AVERAGE = 30;
-
     void wheelEvent(QWheelEvent *event);
     void keyRepeatEvent(QKeyEvent *event);
-
+    ParticleSystemGenerator generator;
+    ParticleSystemWorldEntity *world_entity;
+    TransformEntity default_transform;
+    PlaneEntity *plane;
+    PlaneRenderable *plane_renderable;
+    CubeEntity *cube;
+    CubeCollider *cube_collider;
+    StaticPhysicsEntity *static_cube;
+    CubeRenderable *cube_renderable;
+    WorldEntity *plane_world;
+    Scene scene;
+    PhysicsSystem system;
+    GravityForce gravity;
+    Simulation *sim;
+    Renderer *renderer;
     Mesh m_mesh;
     std::shared_ptr<Shape> m_shape;
     std::shared_ptr<Shape> m_ground;
     glm::vec3 gravitySphere;
    // std::shared_ptr<Kinect> m_kinect;
-    std::shared_ptr<ParticleSystem> m_particles;
     QWidget *m_window;
     QTime m_time;
     QTimer m_timer;
@@ -53,7 +80,6 @@ private:
     float m_fps;
     int m_frameIndex;
     float m_frameTimes[FRAMES_TO_AVERAGE];
-
     Graphics* m_graphics;
 
     // TODO (Warmup 1): You might want to remove this after completing the lab
