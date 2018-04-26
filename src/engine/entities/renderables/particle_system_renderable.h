@@ -24,7 +24,7 @@ class ParticleSystemRenderable : public RenderableEntity
         GLuint m_particles_color_vb;
         GLfloat* m_particles_position_data;
         GLubyte* m_particles_color_data;
-        float particleRadius = .05f;
+        float particleRadius = .02f;
         glm::vec3 m_particle_mat = glm::vec3(0.064453125f*4.f, 0.1923828125f*4.f, 0.23828125f*4.f);
         glm::vec3 m_particle_mat_top = glm::vec3(.238f*4.f, .06445f*4.f, 0.21484f*4.f);
 

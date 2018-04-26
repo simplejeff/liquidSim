@@ -9,7 +9,7 @@ class PlaneCollider : public ColliderEntity
     public:
         PlaneCollider(GeomEntity *);
         virtual ~PlaneCollider();
-        Collision GetCollision(const Vector3f&) const;
+        std::vector<Collision> GetCollision(const Vector3f&) const;
     protected:
 
     private:

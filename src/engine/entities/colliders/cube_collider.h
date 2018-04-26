@@ -8,7 +8,7 @@ class CubeCollider : public ColliderEntity
     public:
         CubeCollider(GeomEntity *);
         virtual ~CubeCollider();
-        Collision GetCollision(const Vector3f&) const;
+        std::vector<Collision> GetCollision(const Vector3f&) const;
 
     protected:
 

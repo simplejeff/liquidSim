@@ -3,7 +3,7 @@ QT += core gui opengl
 TARGET = cs195u_engine
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -std=c++14
+QMAKE_CXXFLAGS += -std=c++14 -D EIGEN_DONT_ALIGN_STATICALLY
 CONFIG += c++14
 
 unix:!macx {

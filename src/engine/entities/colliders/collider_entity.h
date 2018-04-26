@@ -15,7 +15,7 @@ class ColliderEntity : public Entity
         inline GeomEntity const * GetGeomEntity() const{return m_geom_entity;}
         inline void SetGeomEntity(GeomEntity * geom_entity){ m_geom_entity = geom_entity;}
         virtual Collision GetCollision(const ColliderEntity &) const{ return Collision();}
-        virtual Collision GetCollision(const Vector3f&) const = 0;
+        virtual std::vector<Collision> GetCollision(const Vector3f&) const = 0;
     protected:
         GeomEntity *m_geom_entity;
     private:

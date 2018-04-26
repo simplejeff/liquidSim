@@ -14,8 +14,8 @@ class ParticleSystemEntity : public DynamicPhysicsEntity
         virtual ~ParticleSystemEntity();
     protected:
     private:
-        Collision GetCollision(const Vector3f&,const PhysicsEntity &) const;
-        void ResolveCollision(size_t,const Collision &);
+        std::vector<Collision> GetCollision(const Vector3f&,const PhysicsEntity &) const;
+        void ResolveCollision(size_t,const std::vector<Collision> &);
 };
 
 #endif // PARTICLESYSTEMENTITY_H

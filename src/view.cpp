@@ -115,7 +115,7 @@ void View::initializeGL()
 
     // TODO (Lab 1): Initialize camera
     m_camera = std::make_shared<Camera>();
-    m_camera->setEye(glm::vec3(0, 2, 5));
+    m_camera->setEye(glm::vec3(0, 0, 5));
     m_camera->setLook(glm::vec3(0, 0, -1));
     m_graphics->setCamera(m_camera);
     // TODO (Lab 1): Initialize material
@@ -144,7 +144,7 @@ void View::initializeGL()
     //m_kinect = std::make_shared<Kinect>();
 
     //Add particle system
-        world_entity = generator.GenerateCubeOfSpheres(Vector3f(-.5,-.5,.5),Vector3f(.5,-.5,.5),Vector3f(-.5,-.5,-.5),8,Vector3f(0,1,0),.5,.2,true);
+        world_entity = generator.GenerateCubeOfSpheres(Vector3f(-.5,-.5,.5),Vector3f(.5,-.5,.5),Vector3f(-.5,-.5,-.5),12,Vector3f(0,1,0),.6,.8,true);
 
     //add plane
     //Add base plane
@@ -164,8 +164,8 @@ void View::initializeGL()
 
         cube_collider = new CubeCollider(cube);
         static_cube = new StaticPhysicsEntity(cube_collider);
-           static_cube->SetCoefficientRestitution(.9);
-           static_cube->SetCoefficientFriction(.2);
+           static_cube->SetCoefficientRestitution(.6);
+           static_cube->SetCoefficientFriction(.8);
 
         cube_renderable = new CubeRenderable(cube);
            cube_renderable->SetColor(Vector3f(1,0,1));
@@ -696,6 +696,7 @@ void View::tick()
     if(keys["simulation"]) {
         sim->Update(seconds);
     }
+
     /** SUPPORT CODE START **/
     /* VR updates */
     updatePoses();

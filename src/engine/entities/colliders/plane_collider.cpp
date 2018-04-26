@@ -11,10 +11,12 @@ PlaneCollider::~PlaneCollider()
     //dtor
 }
 
-Collision PlaneCollider::GetCollision(const Vector3f& p) const{
+std::vector<Collision> PlaneCollider::GetCollision(const Vector3f& p) const{
     PlaneEntity * plane = (PlaneEntity *)m_geom_entity;
     float value = plane->EvaluatePoint(p);
-    bool is_collision = (value <=0) && (plane->PointInPlane(p));
-    return Collision(plane->GetNormal(),value,is_collision);
+    bool is_collision = (value <=0);// && (plane->PointInPlane(p));
+    std::vector<Collision> collisions;
+    collisions.push_back(Collision(plane->GetNormal(), value, is_collision));
+    return collisions;
 }
 
