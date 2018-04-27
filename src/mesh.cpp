@@ -700,6 +700,22 @@ void Mesh::simplify(int num) {
     convertSimplifyStructBack();
 }
 
+VectorXf Mesh::getVertices() {
+    VectorXf vectorVertices(_vertices.size()*3);
+    int i = 0;
+    for(Vector3f vertex:_vertices) {
+        vectorVertices(i) = vertex(0)/2.f;
+        vectorVertices(i+1) = vertex(1)/2.f;
+        vectorVertices(i+2) = vertex(2)/2.f;
+        i+=3;
+    }
+    return vectorVertices;
+}
+
+int Mesh::getVertexSize() {
+    return _vertices.size();
+}
+
 std::shared_ptr<Shape> Mesh::makeMesh() {
     std::vector<float> shapedata = std::vector<float>();
     for(Vector3i face:_faces) {

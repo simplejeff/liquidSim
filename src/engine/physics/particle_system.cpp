@@ -58,17 +58,14 @@ void ParticleSystem::Step(float dt){
 
     ClearForces();
     ApplyForces();
-    HandleCollisions();
-
 
     //Basic update
     m_v += dt*m_f;
     m_x_new += dt*m_v;
-
     //Constraint stuff goes here
     m_solver->SolverIterations(40,m_constraints,m_x_new);
-
     //Adjust original positions
+                HandleCollisions();
     m_x = m_x_new;
 }
 
@@ -188,6 +185,7 @@ void ParticleSystem::HandleCollision(const std::vector<Collision> & collisions,s
                 }else{
                     SetParticleVelocity(j,v_t - collision.GetRestitutionCoeff()*v_n);
                 }
+
             }
             if(dist <= 0){
                 SetParticleNewPosition(j,p + n*(.01f - dist));

@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <set>
 #include "src/engine/graphics/shape.h"
-
+#include <Eigen/Dense>
 #include <Eigen/StdVector>
 
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix2f)
@@ -78,6 +78,8 @@ public:
     std::unordered_map<int, Face> faceMap;
     std::set<collapseCost> collapseCosts;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    Eigen::VectorXf getVertices();
+    int getVertexSize();
     void initFromVectors(const std::vector<Eigen::Vector3f> &vertices,
          const std::vector<Eigen::Vector3i> &faces);
     void loadFromFile(const std::string &filePath);

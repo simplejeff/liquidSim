@@ -138,17 +138,20 @@ void View::initializeGL()
     keys["wireframe"] = false;
     keys["simulation"] = false;
 
-    QString infile = "C:/Users/Jeff/Documents/graphics/mesh_visualiser/meshes/teapot.obj";
-    //m_mesh.loadFromFile(infile.toStdString());
+    QString infile = "C:/Users/Jeff/Documents/graphics/liquidSim/meshes/teapot.obj";
+    m_mesh.loadFromFile(infile.toStdString());
+    m_mesh.simplify(500);
+    m_shape = m_mesh.makeMesh();
     //m_kinect = std::make_shared<Kinect>();
-
+    VectorXf x = m_mesh.getVertices();
+    VectorXf v = GenRandomVelocities(m_mesh.getVertexSize());
     size_t n = 6;
     size_t n3 = n*n*n;
 
     float cube_side_length = 1.0;
-    VectorXf x = GenParticleInCube(n,cube_side_length);
+    //VectorXf x = GenParticleInCube(n,cube_side_length);
 
-    VectorXf v = GenRandomVelocities(n3);
+    //VectorXf v = GenRandomVelocities(n3);
     VectorXf shiftRight(12);
     shiftRight << .5,0,0,.5,0,0,.5,0,0,.5,0,0;
     VectorXf pos(12);
@@ -171,7 +174,7 @@ void View::initializeGL()
     posForward << .5,-.5,-.5,.5,.5,-.5,-.5,.5,-.5,-.5,-.5,-.5;
     posForward*=4;
     posForward+=shiftRight;
-    float friction_coeff = .8;
+    float friction_coeff = .1;
     float restitution_coeff = .6;
     plane = new PlaneObject(friction_coeff,restitution_coeff,pos);
     plane->SetColor(Vector3f(57.f, 6.f, 190.f)/255.f);
@@ -192,8 +195,8 @@ void View::initializeGL()
 
     grid = new Grid(10.0f,10.0f,10.0f,-5.0f,-5.0f,-5.0f,.5f);
 
-    float render_radius = .05;
-    float rest_density = .005;
+    float render_radius = .03;
+    float rest_density = .01;
     system = new ParticleSystem(x,v,render_radius,rest_density,value_kernel,grad_kernel,grid);
     system->AddStaticObject(plane);
     system->AddStaticObject(planeRight);
@@ -394,6 +397,7 @@ void View::draw() {
     //    m_graphics->translate(gravitySphere);
     //    m_graphics->scale(glm::vec3(.1f, .1f, .1f));
     //    m_graphics->drawShape("sphere");
+   // m_shape->draw(m_graphics);
     m_graphics->clearTransform();
     system->Render(m_graphics);
     #if GRAPHICS_DEBUG_LEVEL > 0
@@ -742,7 +746,7 @@ void View::tick()
         m_graphics->setWireframe(false);
     }
     if(keys["simulation"]) {
-        system->Step(seconds/5.f);
+        system->Step(seconds/3.f);
     }
 
     /** SUPPORT CODE START **/
