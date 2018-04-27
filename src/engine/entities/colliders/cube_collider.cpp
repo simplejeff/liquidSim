@@ -1,9 +1,6 @@
 #include "cube_collider.h"
-#include "engine/entities/geometry/plane_entity.h"
-#include "engine/entities/geometry/cube_entity.h"
-#include "plane_collider.h"
 
-CubeCollider::CubeCollider(GeomEntity * geom_entity):ColliderEntity(geom_entity)
+CubeCollider::CubeCollider()
 {
     //ctor
 }
@@ -14,9 +11,10 @@ CubeCollider::~CubeCollider()
 }
 
 
-std::vector<Collision> CubeCollider::GetCollision(const Vector3f& p) const{
-    CubeEntity * m_cube_entity = (CubeEntity *)m_geom_entity;
-    TransformEntity default_transform;
+//std::vector<int> CubeCollider::GetCollision(const Vector3f& p) const{
+//    return std::vector<int>();
+//    CubeEntity * m_cube_entity = (CubeEntity *)m_geom_entity;
+/*    TransformEntity default_transform;
     PlaneEntity plane0(&default_transform,m_cube_entity->GetV0(),m_cube_entity->GetV1(),m_cube_entity->GetV3(),m_cube_entity->GetV2());
     PlaneEntity plane1(&default_transform,m_cube_entity->GetV0(),m_cube_entity->GetV7(),m_cube_entity->GetV4(),m_cube_entity->GetV1());
     PlaneEntity plane2(&default_transform,m_cube_entity->GetV1(),m_cube_entity->GetV4(),m_cube_entity->GetV5(),m_cube_entity->GetV3());
@@ -73,4 +71,4 @@ std::vector<Collision> CubeCollider::GetCollision(const Vector3f& p) const{
     } else {
         collisions.push_back(Collision());
     }*/
-}
+//}

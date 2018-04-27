@@ -12,24 +12,18 @@
 #include <memory>
 #include <openvr.h>
 #include "glm/glm.hpp"
-#include "engine/entities/physics/statics/static_physics_entity.h"
-#include "engine/entities/geometry/sphere.h"
-#include "engine/entities/renderables/sphere_renderable.h"
-#include "engine/entities/colliders/sphere_collider.h"
-#include "engine/entities/physics/dynamics/particle_system_entity.h"
-#include "engine/entities/world/particle_system_world_entity.h"
-#include "engine/entities/geometry/plane_entity.h"
-#include "engine/entities/generators/particle_system_generator.h"
-#include "engine/entities/geometry/cube_entity.h"
-#include "engine/entities/renderables/cube_renderable.h"
-#include "engine/entities/colliders/cube_collider.h"
-#include "engine/entities/physics/forces/gravity_force.h"
-#include "engine/entities/renderables/plane_renderable.h"
-#include "engine/system/simulation/simulation.h"
-#include "engine/renderer/renderer.h"
+
+
+#include "engine/math/constraint_solver.h"
+#include "engine/physics/particle_generator.h"
+#include "engine/physics/particle_system.h"
+#include "engine/physics/plane_object.h"
+#include "engine/math/poly6_kernel.h"
+#include "engine/math/spiky_kernel.h"
+#include "engine/math/grid.h"
+
 
 #include "src/engine/graphics/FBO.h"
-#include "src/engine/graphics/particle_system.h"
 #include "src/engine/graphics/kinect.h"
 class Graphics;
 class Camera;
@@ -52,21 +46,15 @@ private:
     static const int FRAMES_TO_AVERAGE = 30;
     void wheelEvent(QWheelEvent *event);
     void keyRepeatEvent(QKeyEvent *event);
-    ParticleSystemGenerator generator;
-    ParticleSystemWorldEntity *world_entity;
-    TransformEntity default_transform;
-    PlaneEntity *plane;
-    PlaneRenderable *plane_renderable;
-    CubeEntity *cube;
-    CubeCollider *cube_collider;
-    StaticPhysicsEntity *static_cube;
-    CubeRenderable *cube_renderable;
-    WorldEntity *plane_world;
-    Scene scene;
-    PhysicsSystem system;
-    GravityForce gravity;
-    Simulation *sim;
-    Renderer *renderer;
+    PlaneObject *plane;
+    PlaneObject *planeRight;
+    PlaneObject *planeBack;
+    PlaneObject *planeLeft;
+    PlaneObject *planeForward;
+    Poly6Kernel *value_kernel;
+    SpikyKernel *grad_kernel;
+    Grid *grid;
+    ParticleSystem *system;
     Mesh m_mesh;
     std::shared_ptr<Shape> m_shape;
     std::shared_ptr<Shape> m_ground;

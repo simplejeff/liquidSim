@@ -1,14 +1,13 @@
 #ifndef CUBE_COLLIDER_H
 #define CUBE_COLLIDER_H
 
-#include "collider_entity.h"
 
-class CubeCollider : public ColliderEntity
+class CubeCollider
 {
     public:
-        CubeCollider(GeomEntity *);
+        CubeCollider();
         virtual ~CubeCollider();
-        std::vector<Collision> GetCollision(const Vector3f&) const;
+   //     std::vector<int> GetCollision(const Vector3f&) const;
 
     protected:
 

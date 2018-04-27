@@ -55,16 +55,15 @@ View::View(QWidget *parent) : QGLWidget(ViewFormat(), parent),
 
 View::~View()
 {
-    delete(world_entity);
-    /*(delete(plane);
-    delete(plane_renderable);*/
-    delete(cube);
-    delete(cube_collider);
-    delete(static_cube);
-    delete(cube_renderable);
-    delete(plane_world);
-    delete(sim);
-    delete(renderer);
+    delete(value_kernel);
+    delete(grad_kernel);
+    delete(grid);
+    delete(system);
+    delete(plane);
+    delete(planeRight);
+    delete(planeBack);
+    delete(planeLeft);
+    delete(planeForward);
     if(m_hmd) {
 
         /* Shutdown the VR system */
@@ -143,29 +142,78 @@ void View::initializeGL()
     //m_mesh.loadFromFile(infile.toStdString());
     //m_kinect = std::make_shared<Kinect>();
 
-    //Add particle system
-        world_entity = generator.GenerateCubeOfSpheres(Vector3f(-.5,-.5,.5),Vector3f(.5,-.5,.5),Vector3f(-.5,-.5,-.5),12,Vector3f(0,1,0),.6,.8,true);
+    size_t n = 6;
+    size_t n3 = n*n*n;
 
-    //add plane
-    //Add base plane
+    float cube_side_length = 1.0;
+    VectorXf x = GenParticleInCube(n,cube_side_length);
+
+    VectorXf v = GenRandomVelocities(n3);
+    VectorXf shiftRight(12);
+    shiftRight << .5,0,0,.5,0,0,.5,0,0,.5,0,0;
+    VectorXf pos(12);
+    pos << -.5,-.5,.5,.5,-.5,.5,.5,-.5,-.5,-.5,-.5,-.5;
+    pos*=4;
+    pos+=shiftRight;
+    VectorXf posRight(12);
+    posRight << .5,-.5,.5,.5,.5,.5,.5,.5,-.5,.5,-.5,-.5;
+    posRight*=4;
+    posRight+=shiftRight;
+    VectorXf posBack(12);
+    posBack << -.5,-.5,.5,-.5,.5,.5,.5,.5,.5,.5,-.5,.5;
+    posBack*=4;
+    posBack+=shiftRight;
+    VectorXf posLeft(12);
+    posLeft << -.5,-.5,-.5,-.5,.5,-.5,-.5,.5,.5,-.5,-.5,.5;
+    posLeft*=4;
+    posLeft+=shiftRight;
+    VectorXf posForward(12);
+    posForward << .5,-.5,-.5,.5,.5,-.5,-.5,.5,-.5,-.5,-.5,-.5;
+    posForward*=4;
+    posForward+=shiftRight;
+    float friction_coeff = .8;
+    float restitution_coeff = .6;
+    plane = new PlaneObject(friction_coeff,restitution_coeff,pos);
+    plane->SetColor(Vector3f(57.f, 6.f, 190.f)/255.f);
+    planeRight = new PlaneObject(friction_coeff,restitution_coeff,posRight);
+    planeRight->SetColor(Vector3f(57.f, 6.f, 190.f)/255.f);
+    planeBack = new PlaneObject(friction_coeff,restitution_coeff,posBack);
+    planeBack->SetColor(Vector3f(57.f, 6.f, 190.f)/255.f);
+    planeLeft = new PlaneObject(friction_coeff,restitution_coeff,posLeft);
+    planeLeft->SetColor(Vector3f(57.f, 6.f, 190.f)/255.f);
+    planeForward = new PlaneObject(friction_coeff,restitution_coeff,posForward);
+    planeForward->SetColor(Vector3f(57.f, 6.f, 190.f)/255.f);
+    //Parameters that work well for "exploding" (aka from staring density to lower density being satisfied) when tensile instability is off
+    // h = .5, grid_size = .5, rest_density = .005
+
+    float h = .5;
+    value_kernel = new Poly6Kernel(h);
+    grad_kernel = new SpikyKernel(h);
+
+    grid = new Grid(10.0f,10.0f,10.0f,-5.0f,-5.0f,-5.0f,.5f);
+
+    float render_radius = .05;
+    float rest_density = .005;
+    system = new ParticleSystem(x,v,render_radius,rest_density,value_kernel,grad_kernel,grid);
+    system->AddStaticObject(plane);
+    system->AddStaticObject(planeRight);
+    system->AddStaticObject(planeBack);
+    system->AddStaticObject(planeLeft);
+    system->AddStaticObject(planeForward);
+/*
+    //Add particle system
+        world_entity = generator.GenerateCubeOfSpheres(Vector3f(-.5,-.5,.5),Vector3f(.5,-.5,.5),Vector3f(-.5,-.5,-.5),8,Vector3f(0,1,0),.8,.1,true);
+
         default_transform;
         default_transform.SetTranslate(Vector3f(0, 0, 0));
-        float scale = 3;
-       // plane = new PlaneEntity(&default_transform,Vector3f(-.5,-.5,.5)*scale,Vector3f(.5,-.5,.5)*scale,Vector3f(.5,-.5,-.5)*scale,Vector3f(-.5,-.5,-.5)*scale);
+        float scale = 2.0f;
 
-        /*PlaneCollider plane_collider(&plane);
-        StaticPhysicsEntity static_plane(&plane_collider);
-        static_plane.SetCoefficientRestitution(.9);
-        static_plane.SetCoefficientFriction(.2);*/
-       // plane_renderable = new PlaneRenderable(plane);
-       // plane_renderable->SetColor(Vector3f(0,0,1));
-
-        cube = new CubeEntity(&default_transform, 3.0f, Vector3f(-.5,-.5,.5)*scale,Vector3f(.5,-.5,.5)*scale,Vector3f(-.5,-.5,-.5)*scale);
+        cube = new CubeEntity(&default_transform, scale, Vector3f(-.5,-.5,.5)*scale,Vector3f(.5,-.5,.5)*scale,Vector3f(-.5,-.5,-.5)*scale);
 
         cube_collider = new CubeCollider(cube);
         static_cube = new StaticPhysicsEntity(cube_collider);
-           static_cube->SetCoefficientRestitution(.6);
-           static_cube->SetCoefficientFriction(.8);
+           static_cube->SetCoefficientRestitution(.8);
+           static_cube->SetCoefficientFriction(.1);
 
         cube_renderable = new CubeRenderable(cube);
            cube_renderable->SetColor(Vector3f(1,0,1));
@@ -182,7 +230,7 @@ void View::initializeGL()
            sim = new Simulation(EULER,&system);
            sim->AddSceneEntities(scene);
 
-           renderer = new Renderer(&scene);
+           renderer = new Renderer(&scene);*/
 }
 
 void View::initVR() {
@@ -347,7 +395,7 @@ void View::draw() {
     //    m_graphics->scale(glm::vec3(.1f, .1f, .1f));
     //    m_graphics->drawShape("sphere");
     m_graphics->clearTransform();
-    renderer->Render(m_graphics);
+    system->Render(m_graphics);
     #if GRAPHICS_DEBUG_LEVEL > 0
         m_graphics->printDebug();
         m_graphics->printShaderDebug();
@@ -694,7 +742,7 @@ void View::tick()
         m_graphics->setWireframe(false);
     }
     if(keys["simulation"]) {
-        sim->Update(seconds);
+        system->Step(seconds/5.f);
     }
 
     /** SUPPORT CODE START **/
